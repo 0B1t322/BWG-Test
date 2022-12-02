@@ -3,7 +3,6 @@ package aggregate
 import (
 	"time"
 
-	"github.com/0B1t322/BWG-Test/internal/models/entity"
 	"github.com/google/uuid"
 )
 
@@ -28,7 +27,7 @@ const (
 
 type Transaction struct {
 	ID            uuid.UUID
-	Balance       *entity.Balance
+	UserID        uuid.UUID
 	Amount        float64
 	Status        TransactionStatus
 	OperationType OperationType
@@ -39,11 +38,11 @@ type Transaction struct {
 func NewTransaction(
 	amount float64,
 	operationType OperationType,
-	balance *entity.Balance,
+	userID uuid.UUID,
 ) Transaction {
 	return Transaction{
 		ID:            uuid.New(),
-		Balance:       balance,
+		UserID:        userID,
 		Amount:        amount,
 		Status:        TransactionStatusCreated,
 		OperationType: operationType,
@@ -51,12 +50,12 @@ func NewTransaction(
 	}
 }
 
-func (t Transaction) Execute() {
+func (t Transaction) Execute(balance Balance) {
 	switch t.OperationType {
 	case OperationTypeAdd:
-		t.Balance.Balance += t.Amount
+		balance.AddAmount(t.Amount)
 	case OperationTypeSub:
-		t.Balance.Balance -= t.Amount
+		balance.SubAmount(t.Amount)
 	}
 	t.ExecutedAt = time.Now().UTC()
 }
@@ -69,8 +68,12 @@ func (t *Transaction) SetSuccess() {
 	t.Status = TransactionStatusSuccess
 }
 
-func (t Transaction) CanExecute() bool {
-	if t.OperationType == OperationTypeSub && t.Balance.Balance < t.Amount {
+func (t Transaction) IsSuccess() bool {
+	return t.Status == TransactionStatusSuccess
+}
+
+func (t Transaction) CanExecute(balance Balance) bool {
+	if t.OperationType == OperationTypeSub && balance.GetBalance() < t.Amount {
 		return false
 	}
 
