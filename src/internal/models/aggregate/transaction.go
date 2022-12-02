@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/0B1t322/BWG-Test/internal/models/entity"
+	"github.com/google/uuid"
 )
 
 type TransactionStatus int
@@ -14,6 +15,10 @@ const (
 	TransactionStatusDenied
 )
 
+func (t TransactionStatus) Int() int {
+	return int(t)
+}
+
 type OperationType int
 
 const (
@@ -22,7 +27,7 @@ const (
 )
 
 type Transaction struct {
-	ID            string
+	ID            uuid.UUID
 	Balance       *entity.Balance
 	Amount        float64
 	Status        TransactionStatus
@@ -37,6 +42,7 @@ func NewTransaction(
 	balance *entity.Balance,
 ) Transaction {
 	return Transaction{
+		ID:            uuid.New(),
 		Balance:       balance,
 		Amount:        amount,
 		Status:        TransactionStatusCreated,
