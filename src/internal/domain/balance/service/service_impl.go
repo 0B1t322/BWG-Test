@@ -8,8 +8,21 @@ import (
 	"github.com/google/uuid"
 )
 
+type UserGetter interface {
+	// If user not found, it will return ErrUserNotFound
+	GetUser(ctx context.Context, userID string) (aggregate.User, error)
+}
+
 type BalanceServiceImpl struct {
 	repo balancerepo.BalanceRepository
+	ug   UserGetter
+}
+
+func NewBalanceService(repo balancerepo.BalanceRepository, ug UserGetter) *BalanceServiceImpl {
+	return &BalanceServiceImpl{
+		repo: repo,
+		ug:   ug,
+	}
 }
 
 // GetBalance returns balance
@@ -55,6 +68,10 @@ func (b *BalanceServiceImpl) CreateBalance(
 	ctx context.Context,
 	userID uuid.UUID,
 ) (aggregate.Balance, error) {
+	if _, err := b.ug.GetUser(ctx, userID.String()); err != nil {
+		return aggregate.Balance{}, ErrUserNotFound
+	}
+
 	balance := aggregate.NewBalance(0, userID)
 
 	err := b.repo.CreateBalance(ctx, balance)
