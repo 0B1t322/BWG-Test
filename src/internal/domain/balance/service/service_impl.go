@@ -1,0 +1,66 @@
+package balance
+
+import (
+	"context"
+
+	balancerepo "github.com/0B1t322/BWG-Test/internal/domain/balance/repository"
+	"github.com/0B1t322/BWG-Test/internal/models/aggregate"
+	"github.com/google/uuid"
+)
+
+type BalanceServiceImpl struct {
+	repo balancerepo.BalanceRepository
+}
+
+// GetBalance returns balance
+func (b *BalanceServiceImpl) GetBalance(
+	ctx context.Context,
+	userID string,
+) (aggregate.Balance, error) {
+	balance, err := b.repo.GetBalanceForUser(ctx, userID)
+	if err == balancerepo.ErrBalanceNotFound {
+		return aggregate.Balance{}, ErrBalanceNotFound
+	} else if err != nil {
+		return aggregate.Balance{}, err
+	}
+
+	return balance, nil
+}
+
+// UpdateBalance updates balance
+func (b *BalanceServiceImpl) UpdateBalance(
+	ctx context.Context,
+	balanceID uuid.UUID,
+	balance float64,
+) error {
+	balanceModel, err := b.repo.GetBalance(ctx, balanceID)
+	if err == balancerepo.ErrBalanceNotFound {
+		return ErrBalanceNotFound
+	} else if err != nil {
+		return err
+	}
+
+	balanceModel.SetBalance(balance)
+
+	err = b.repo.UpdateBalance(ctx, balanceModel)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CreateBalance creates new balance
+func (b *BalanceServiceImpl) CreateBalance(
+	ctx context.Context,
+	userID uuid.UUID,
+) (aggregate.Balance, error) {
+	balance := aggregate.NewBalance(0, userID)
+
+	err := b.repo.CreateBalance(ctx, balance)
+	if err != nil {
+		return aggregate.Balance{}, err
+	}
+
+	return balance, nil
+}
