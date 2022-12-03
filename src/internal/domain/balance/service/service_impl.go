@@ -10,7 +10,7 @@ import (
 
 type UserGetter interface {
 	// If user not found, it will return ErrUserNotFound
-	GetUser(ctx context.Context, userID string) (aggregate.User, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (aggregate.User, error)
 }
 
 type BalanceServiceImpl struct {
@@ -28,7 +28,7 @@ func NewBalanceService(repo balancerepo.BalanceRepository, ug UserGetter) *Balan
 // GetBalance returns balance
 func (b *BalanceServiceImpl) GetBalance(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 ) (aggregate.Balance, error) {
 	balance, err := b.repo.GetBalanceForUser(ctx, userID)
 	if err == balancerepo.ErrBalanceNotFound {
@@ -68,8 +68,10 @@ func (b *BalanceServiceImpl) CreateBalance(
 	ctx context.Context,
 	userID uuid.UUID,
 ) (aggregate.Balance, error) {
-	if _, err := b.ug.GetUser(ctx, userID.String()); err != nil {
+	if _, err := b.ug.GetUser(ctx, userID); err == ErrUserNotFound {
 		return aggregate.Balance{}, ErrUserNotFound
+	} else if err != nil {
+		return aggregate.Balance{}, err
 	}
 
 	balance := aggregate.NewBalance(0, userID)

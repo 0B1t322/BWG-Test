@@ -16,7 +16,7 @@ var (
 type BalanceService interface {
 	// GetBalance returns balance
 	// If balance not found, it will return ErrBalanceNotFound
-	GetBalance(ctx context.Context, userID string) (aggregate.Balance, error)
+	GetBalance(ctx context.Context, userID uuid.UUID) (aggregate.Balance, error)
 
 	// UpdateBalance updates balance
 	UpdateBalance(ctx context.Context, balanceID uuid.UUID, balance float64) error
