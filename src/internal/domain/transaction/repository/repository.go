@@ -31,4 +31,8 @@ type TransactionRepository interface {
 		ctx context.Context,
 		userID uuid.UUID,
 	) ([]aggregate.Transaction, error)
+
+	GetAllTransactionsThatNotExecuted(
+		ctx context.Context,
+	) ([]aggregate.Transaction, error)
 }

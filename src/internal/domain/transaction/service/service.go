@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrTransactionNotFound = errors.New("transaction not found")
+	ErrBalanceNotFound     = errors.New("balance not found")
 )
 
 type TransactionService interface {
