@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/0B1t322/BWG-Test/internal/models/aggregate"
 	"github.com/0B1t322/BWG-Test/internal/models/entity"
 	"github.com/google/uuid"
 )
@@ -36,18 +37,20 @@ func (Balance) TableName() string {
 	return BalanceTableName
 }
 
-func BalanceModelFrom(balance *entity.Balance) Balance {
+func BalanceModelFrom(balance aggregate.Balance) Balance {
 	return Balance{
 		ID:      balance.ID,
 		UserID:  balance.UserID,
-		Balance: balance.Balance,
+		Balance: balance.Balance.Balance,
 	}
 }
 
-func BalanceModelTo(balance *Balance) entity.Balance {
-	return entity.Balance{
-		ID:      balance.ID,
-		UserID:  balance.UserID,
-		Balance: balance.Balance,
+func BalanceModelTo(balance *Balance) aggregate.Balance {
+	return aggregate.Balance{
+		Balance: &entity.Balance{
+			ID:      balance.ID,
+			UserID:  balance.UserID,
+			Balance: balance.Balance,
+		},
 	}
 }

@@ -5,7 +5,6 @@ import (
 
 	"github.com/0B1t322/BWG-Test/internal/models/aggregate"
 	"github.com/google/uuid"
-	"github.com/samber/lo"
 )
 
 const TransactionTableName = "Transactions"
@@ -38,8 +37,7 @@ type Transaction struct {
 	ExecutedAt time.Time `gorm:"column:ExecutedAt;type:timestamp;"`
 
 	// Edges
-	User    *User    `gorm:"foreignKey:UserId;references:Id"`
-	Balance *Balance `gorm:"foreignKey:UserId"`
+	User *User `gorm:"foreignKey:UserId;references:Id"`
 }
 
 func (Transaction) TableName() string {
@@ -49,20 +47,18 @@ func (Transaction) TableName() string {
 func TransactionModelFrom(transaction aggregate.Transaction) Transaction {
 	return Transaction{
 		ID:         transaction.ID,
-		UserID:     transaction.Balance.UserID,
+		UserID:     transaction.UserID,
 		Amount:     transaction.Amount,
 		Status:     transaction.Status.Int(),
 		CreatedAt:  transaction.CreatedAt,
 		ExecutedAt: transaction.ExecutedAt,
-
-		Balance: lo.ToPtr(BalanceModelFrom(transaction.Balance)),
 	}
 }
 
 func TransactionModelTo(transaction *Transaction) aggregate.Transaction {
 	return aggregate.Transaction{
 		ID:         transaction.ID,
-		Balance:    lo.ToPtr(BalanceModelTo(transaction.Balance)),
+		UserID:     transaction.UserID,
 		Amount:     transaction.Amount,
 		Status:     aggregate.TransactionStatus(transaction.Status),
 		CreatedAt:  transaction.CreatedAt,
