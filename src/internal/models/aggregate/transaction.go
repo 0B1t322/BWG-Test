@@ -50,22 +50,23 @@ func NewTransaction(
 	}
 }
 
-func (t Transaction) Execute(balance Balance) {
+func (t *Transaction) Execute(balance Balance) {
 	switch t.OperationType {
 	case OperationTypeAdd:
 		balance.AddAmount(t.Amount)
 	case OperationTypeSub:
 		balance.SubAmount(t.Amount)
 	}
-	t.ExecutedAt = time.Now().UTC()
 }
 
 func (t *Transaction) SetDenied() {
 	t.Status = TransactionStatusDenied
+	t.ExecutedAt = time.Now().UTC()
 }
 
 func (t *Transaction) SetSuccess() {
 	t.Status = TransactionStatusSuccess
+	t.ExecutedAt = time.Now().UTC()
 }
 
 func (t Transaction) IsSuccess() bool {

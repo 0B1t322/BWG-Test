@@ -7,6 +7,9 @@ import (
 
 type User struct {
 	*entity.User
+
+	// Balance edge
+	Balance *Balance
 }
 
 func NewUser(
