@@ -7,6 +7,7 @@ import (
 	"github.com/0B1t322/BWG-Test/internal/infrastructure/dal/gorm/models"
 	"github.com/0B1t322/BWG-Test/internal/models/aggregate"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"gorm.io/gorm"
 )
 
@@ -39,6 +40,7 @@ func (u *PGUserRepository) GetUser(ctx context.Context, id uuid.UUID) (aggregate
 		result := u.db.WithContext(ctx).
 			Model(&models.User{}).
 			Where(models.UserFieldID.WithTable()+" = ?", id).
+			Joins(models.UserEdgeBalance.String()).
 			First(&model)
 
 		if result.Error == gorm.ErrRecordNotFound {
@@ -49,6 +51,28 @@ func (u *PGUserRepository) GetUser(ctx context.Context, id uuid.UUID) (aggregate
 	}
 
 	return models.UserModelTo(&model), nil
+}
+
+// GetUsers return all users from the database
+func (u *PGUserRepository) GetUsers(ctx context.Context) ([]aggregate.User, error) {
+	var users []models.User
+	{
+		result := u.db.WithContext(ctx).
+			Model(&models.User{}).
+			Joins(models.UserEdgeBalance.String()).
+			Find(&users)
+
+		if result.Error != nil {
+			return nil, result.Error
+		}
+	}
+
+	return lo.Map(
+		users,
+		func(user models.User, _ int) aggregate.User {
+			return models.UserModelTo(&user)
+		},
+	), nil
 }
 
 func isDuplacateKeyError(err error) bool {
