@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   db:
@@ -12,3 +12,13 @@ services:
       - 5432:5432
     volumes:
       - ./data:/var/lib/postgresql/data
+  back:
+    build: ./src
+    environment:
+      - BWG_APP_PORT=8080
+      - BWG_APP_POSTGRESQL_DSN=postgresql://user:password@db:5432/db?sslmode=disable
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    restart: always
