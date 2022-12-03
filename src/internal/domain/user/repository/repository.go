@@ -21,4 +21,7 @@ type UserRepository interface {
 	// GetUser return user from the database
 	// If user not found, it will return ErrUserNotFound
 	GetUser(ctx context.Context, id uuid.UUID) (aggregate.User, error)
+
+	// GetUsers return all users from the database
+	GetUsers(ctx context.Context) ([]aggregate.User, error)
 }

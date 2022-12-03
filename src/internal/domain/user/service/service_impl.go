@@ -12,6 +12,14 @@ type UserServiceImpl struct {
 	repo userrepo.UserRepository
 }
 
+func NewUserService(
+	repo userrepo.UserRepository,
+) *UserServiceImpl {
+	return &UserServiceImpl{
+		repo: repo,
+	}
+}
+
 // CreateUser creates new user
 // If user with this username already exists, it will return ErrUserExists
 func (u *UserServiceImpl) CreateUser(ctx context.Context, username string) (aggregate.User, error) {
@@ -37,4 +45,9 @@ func (u *UserServiceImpl) GetUser(ctx context.Context, userID uuid.UUID) (aggreg
 	}
 
 	return user, nil
+}
+
+// GetUsers return all users from the database
+func (u *UserServiceImpl) GetUsers(ctx context.Context) ([]aggregate.User, error) {
+	return u.repo.GetUsers(ctx)
 }
