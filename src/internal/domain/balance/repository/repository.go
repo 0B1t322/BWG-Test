@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrBalanceNotFound = errors.New("Balance not found")
+	ErrBalanceExists   = errors.New("Balance with this user already exists")
 )
 
 type BalanceRepository interface {
@@ -18,9 +19,10 @@ type BalanceRepository interface {
 	GetBalance(ctx context.Context, id uuid.UUID) (aggregate.Balance, error)
 
 	// GetBalanceForUser returns balance for user
-	GetBalanceForUser(ctx context.Context, userID string) (aggregate.Balance, error)
+	GetBalanceForUser(ctx context.Context, userID uuid.UUID) (aggregate.Balance, error)
 
 	// CreateBalance creates new balance for user
+	// If balance with this user already exists, it will return ErrBalanceExists
 	CreateBalance(ctx context.Context, balance aggregate.Balance) error
 
 	// UpdateBalance updates balance for user
