@@ -1,0 +1,332 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "BWG API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/transactions": {
+            "post": {
+                "description": "Add transactions for user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Add transactions",
+                "parameters": [
+                    {
+                        "description": "Add transactions request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transactions.TransactionsReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transactions.TransactionsView"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions/{userId}": {
+            "get": {
+                "description": "Get transactions for user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get transactions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transactions.TransactionsView"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Get all users",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UsersView"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "User body",
+                        "name": "userBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.CreateUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserView"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Get user by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserView"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.TransactionReq": {
+            "type": "object",
+            "required": [
+                "amount",
+                "operation",
+                "useId"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "operation": {
+                    "type": "string",
+                    "enum": [
+                        "add",
+                        "sub"
+                    ]
+                },
+                "useId": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            }
+        },
+        "transactions.TransactionsReq": {
+            "type": "object",
+            "required": [
+                "transactions"
+            ],
+            "properties": {
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.TransactionReq"
+                    }
+                }
+            }
+        },
+        "transactions.TransactionsView": {
+            "type": "object",
+            "required": [
+                "transactions"
+            ],
+            "properties": {
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/views.TransactionView"
+                    }
+                }
+            }
+        },
+        "users.CreateUserReq": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.UserView": {
+            "type": "object",
+            "required": [
+                "balance",
+                "id",
+                "username"
+            ],
+            "properties": {
+                "balance": {
+                    "$ref": "#/definitions/views.BalanceView"
+                },
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.UsersView": {
+            "type": "object",
+            "required": [
+                "users"
+            ],
+            "properties": {
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/views.UserView"
+                    }
+                }
+            }
+        },
+        "views.BalanceView": {
+            "type": "object",
+            "required": [
+                "balance",
+                "id"
+            ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            }
+        },
+        "views.TransactionView": {
+            "type": "object",
+            "required": [
+                "amount",
+                "createdAt",
+                "executedAt",
+                "id",
+                "status",
+                "userId"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "executedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "created",
+                        "success",
+                        "denied"
+                    ]
+                },
+                "userId": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            }
+        },
+        "views.UserView": {
+            "type": "object",
+            "required": [
+                "balance",
+                "id",
+                "username"
+            ],
+            "properties": {
+                "balance": {
+                    "$ref": "#/definitions/views.BalanceView"
+                },
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

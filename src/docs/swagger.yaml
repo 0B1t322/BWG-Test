@@ -1,0 +1,224 @@
+basePath: /api
+definitions:
+  dto.TransactionReq:
+    properties:
+      amount:
+        format: float
+        type: number
+      operation:
+        enum:
+        - add
+        - sub
+        type: string
+      useId:
+        format: uuid
+        type: string
+    required:
+    - amount
+    - operation
+    - useId
+    type: object
+  transactions.TransactionsReq:
+    properties:
+      transactions:
+        items:
+          $ref: '#/definitions/dto.TransactionReq'
+        type: array
+    required:
+    - transactions
+    type: object
+  transactions.TransactionsView:
+    properties:
+      transactions:
+        items:
+          $ref: '#/definitions/views.TransactionView'
+        type: array
+    required:
+    - transactions
+    type: object
+  users.CreateUserReq:
+    properties:
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  users.UserView:
+    properties:
+      balance:
+        $ref: '#/definitions/views.BalanceView'
+      id:
+        format: uuid
+        type: string
+      username:
+        type: string
+    required:
+    - balance
+    - id
+    - username
+    type: object
+  users.UsersView:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/views.UserView'
+        type: array
+    required:
+    - users
+    type: object
+  views.BalanceView:
+    properties:
+      balance:
+        type: number
+      id:
+        format: uuid
+        type: string
+    required:
+    - balance
+    - id
+    type: object
+  views.TransactionView:
+    properties:
+      amount:
+        format: float
+        type: number
+      createdAt:
+        format: date-time
+        type: string
+      executedAt:
+        format: date-time
+        type: string
+      id:
+        format: uuid
+        type: string
+      status:
+        enum:
+        - created
+        - success
+        - denied
+        type: string
+      userId:
+        format: uuid
+        type: string
+    required:
+    - amount
+    - createdAt
+    - executedAt
+    - id
+    - status
+    - userId
+    type: object
+  views.UserView:
+    properties:
+      balance:
+        $ref: '#/definitions/views.BalanceView'
+      id:
+        format: uuid
+        type: string
+      username:
+        type: string
+    required:
+    - balance
+    - id
+    - username
+    type: object
+info:
+  contact: {}
+  title: BWG API
+  version: "1.0"
+paths:
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      description: Add transactions for user
+      parameters:
+      - description: Add transactions request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/transactions.TransactionsReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/transactions.TransactionsView'
+      summary: Add transactions
+      tags:
+      - transactions
+  /transactions/{userId}:
+    get:
+      description: Get transactions for user
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/transactions.TransactionsView'
+      summary: Get transactions
+      tags:
+      - transactions
+  /users:
+    get:
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UsersView'
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: User body
+        in: body
+        name: userBody
+        required: true
+        schema:
+          $ref: '#/definitions/users.CreateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserView'
+      summary: Create user
+      tags:
+      - users
+  /users/{id}:
+    get:
+      description: Get user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserView'
+      summary: Get user by id
+      tags:
+      - users
+swagger: "2.0"
